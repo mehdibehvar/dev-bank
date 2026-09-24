@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY web/shop/package.json ./
+COPY web/shop/package.json web/shop/tailwind.config.js web/shop/postcss.config.cjs ./
 RUN npm install
 
 COPY web/shop/tsconfig.json web/shop/tsconfig.app.json web/shop/tsconfig.node.json web/shop/vite.config.ts ./

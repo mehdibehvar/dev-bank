@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY web/dashboard/package.json ./
+COPY web/dashboard/package.json web/dashboard/tailwind.config.js web/dashboard/postcss.config.cjs ./
 RUN npm install
 
 COPY web/dashboard/tsconfig.json web/dashboard/tsconfig.app.json web/dashboard/tsconfig.node.json web/dashboard/vite.config.ts ./

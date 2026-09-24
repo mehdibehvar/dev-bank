@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY web/bank-dashboard/package.json ./
+COPY web/bank-dashboard/package.json web/bank-dashboard/tailwind.config.js web/bank-dashboard/postcss.config.cjs ./
 RUN npm install
 
 COPY web/bank-dashboard/tsconfig.json web/bank-dashboard/tsconfig.app.json web/bank-dashboard/tsconfig.node.json web/bank-dashboard/vite.config.ts ./
