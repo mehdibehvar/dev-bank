@@ -1,0 +1,199 @@
+services:
+  # PostgreSQL for Local Bank
+  bank-db:
+    image: postgres:16-alpine
+    container_name: dev-bank-db-bank
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bank_admin
+      POSTGRES_PASSWORD: bank_pass_123
+      POSTGRES_DB: bank_db
+    volumes:
+      - bank-data:/var/lib/postgresql/data
+      - ./services/bank/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bank_admin -d bank_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Payment Gateway
+  gateway-db:
+    image: postgres:16-alpine
+    container_name: dev-bank-db-gateway
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gateway_admin
+      POSTGRES_PASSWORD: gateway_pass_123
+      POSTGRES_DB: gateway_db
+    volumes:
+      - gateway-data:/var/lib/postgresql/data
+      - ./services/gateway/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gateway_admin -d gateway_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Shop
+  shop-db:
+    image: postgres:16-alpine
+    container_name: dev-bank-db-shop
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: shop_admin
+      POSTGRES_PASSWORD: shop_pass_123
+      POSTGRES_DB: shop_db
+    volumes:
+      - shop-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop_admin -d shop_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for rate limiting and caching
+  redis:
+    image: redis:7-alpine
+    container_name: dev-bank-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  # Local Bank API
+  bank:
+    build:
+      context: ./services/bank
+      dockerfile: Dockerfile
+    container_name: dev-bank-bank
+    restart: unless-stopped
+    environment:
+      BANK_PORT: 3001
+      BANK_HOST: 0.0.0.0
+      BANK_DB_HOST: bank-db
+      BANK_DB_PORT: 5432
+      BANK_DB_USER: bank_admin
+      BANK_DB_PASSWORD: bank_pass_123
+      BANK_DB_NAME: bank_db
+      BANK_ADMIN_API_KEY: sk_bank_admin_test_1234567890
+      NODE_ENV: production
+    depends_on:
+      bank-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "3001:3001"
+
+  # Payment Gateway API
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    container_name: dev-bank-gateway
+    restart: unless-stopped
+    environment:
+      GATEWAY_PORT: 3000
+      GATEWAY_HOST: 0.0.0.0
+      GATEWAY_DB_HOST: gateway-db
+      GATEWAY_DB_PORT: 5432
+      GATEWAY_DB_USER: gateway_admin
+      GATEWAY_DB_PASSWORD: gateway_pass_123
+      GATEWAY_DB_NAME: gateway_db
+      GATEWAY_BANK_URL: http://bank:3001
+      GATEWAY_BANK_API_KEY: sk_bank_admin_test_1234567890
+      GATEWAY_URL: http://localhost:3000
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      NODE_ENV: production
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      gateway-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "3000:3000"
+
+  # Shop Backend API
+  shop-api:
+    build:
+      context: ./services/shop
+      dockerfile: Dockerfile
+    container_name: dev-bank-shop-api
+    restart: unless-stopped
+    environment:
+      SHOP_PORT: 4000
+      SHOP_HOST: 0.0.0.0
+      SHOP_DB_HOST: shop-db
+      SHOP_DB_PORT: 5432
+      SHOP_DB_USER: shop_admin
+      SHOP_DB_PASSWORD: shop_pass_123
+      SHOP_DB_NAME: shop_db
+      SHOP_GATEWAY_URL: http://gateway:3000
+      NODE_ENV: production
+    depends_on:
+      shop-db:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+      redis:
+        condition: service_started
+    ports:
+      - "4000:4000"
+
+  # Merchant Dashboard
+  dashboard:
+    build:
+      context: ./web/dashboard
+      dockerfile: Dockerfile
+    container_name: dev-bank-dashboard
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_SHOP_API_URL: http://localhost:4000
+    depends_on:
+      - gateway
+      - shop-api
+    ports:
+      - "5173:80"
+
+  # Shop Frontend
+  shop-web:
+    build:
+      context: ./web/shop
+      dockerfile: Dockerfile
+    container_name: dev-bank-shop-web
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:4000
+      VITE_GATEWAY_URL: http://localhost:3000
+    depends_on:
+      - shop-api
+      - gateway
+    ports:
+      - "5174:80"
+
+  # Bank Dashboard
+  bank-dashboard:
+    build:
+      context: ./web/bank-dashboard
+      dockerfile: Dockerfile
+    container_name: dev-bank-bank-dashboard
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3001
+    depends_on:
+      - bank
+    ports:
+      - "5175:80"
+
+volumes:
+  bank-data:
+  gateway-data:
+  shop-data:

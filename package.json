@@ -1,0 +1,26 @@
+{
+  "name": "dev-bank",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "web/*"
+  ],
+  "scripts": {
+    "dev": "docker-compose up",
+    "dev:bank": "turbo run dev --filter=bank",
+    "dev:gateway": "turbo run dev --filter=gateway",
+    "dev:shop": "turbo run dev --filter=shop-api",
+    "dev:shop-web": "turbo run dev --filter=shop-web",
+    "dev:dashboard": "turbo run dev --filter=dashboard",
+    "dev:bank-web": "turbo run dev --filter=bank-web",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}
