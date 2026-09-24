@@ -69,8 +69,8 @@ services:
   # Local Bank API
   bank:
     build:
-      context: ./services/bank
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/bank/Dockerfile
     container_name: dev-bank-bank
     restart: unless-stopped
     environment:
@@ -91,11 +91,11 @@ services:
     ports:
       - "3001:3001"
 
-  # Payment Gateway API
+   # Payment Gateway API
   gateway:
     build:
-      context: ./services/gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/gateway/Dockerfile
     container_name: dev-bank-gateway
     restart: unless-stopped
     environment:
@@ -120,11 +120,11 @@ services:
     ports:
       - "3000:3000"
 
-  # Shop Backend API
+   # Shop Backend API
   shop-api:
     build:
-      context: ./services/shop
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/shop/Dockerfile
     container_name: dev-bank-shop-api
     restart: unless-stopped
     environment:
@@ -150,8 +150,8 @@ services:
   # Merchant Dashboard
   dashboard:
     build:
-      context: ./web/dashboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/dashboard/Dockerfile
     container_name: dev-bank-dashboard
     restart: unless-stopped
     environment:
@@ -166,8 +166,8 @@ services:
   # Shop Frontend
   shop-web:
     build:
-      context: ./web/shop
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/shop/Dockerfile
     container_name: dev-bank-shop-web
     restart: unless-stopped
     environment:
@@ -182,8 +182,8 @@ services:
   # Bank Dashboard
   bank-dashboard:
     build:
-      context: ./web/bank-dashboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/bank-dashboard/Dockerfile
     container_name: dev-bank-bank-dashboard
     restart: unless-stopped
     environment:
