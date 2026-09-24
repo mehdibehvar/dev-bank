@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TEST_MODE_INDICATOR } from '@dev-bank/shared/types';
+
+const TEST_MODE_INDICATOR = 'TEST MODE';
 
 const BANK_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const BANK_ADMIN_KEY = import.meta.env.VITE_BANK_ADMIN_KEY || 'sk_bank_admin_test_1234567890';

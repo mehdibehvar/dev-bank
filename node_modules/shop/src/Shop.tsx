@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { TEST_MODE_INDICATOR } from '@dev-bank/shared/types';
+
+const TEST_MODE_INDICATOR = 'TEST MODE';
 
 const SHOP_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || 'http://localhost:3000';

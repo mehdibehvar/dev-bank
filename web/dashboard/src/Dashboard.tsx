@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Merchant,
-  ApiKey,
-  WebhookEndpoint,
-  Payment,
-  TEST_MODE_INDICATOR,
-} from '@dev-bank/shared/types';
+
+const TEST_MODE_INDICATOR = 'TEST MODE';
 
 const GATEWAY_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 

@@ -1,41 +1,74 @@
-# dev-bank
+# DEV Bank
 
-A development sandbox project.
+A local, simulated payment infrastructure for testing and development.
 
-## Getting Started
-
-This project is in its initial state. Add here a description of what the project does, its goals, and how it fits into your workflow.
-
-## Project Structure
+## Architecture
 
 ```
-dev-bank/
-├── README.md
-└── ... (to be added)
+Online Shop (Frontend) → Shop Backend API
+                          ↓
+                    Payment Gateway API
+                          ↓
+                       Local Bank API
 ```
 
-## Setup
+The Online Shop never directly accesses the Bank database. It communicates through the Payment Gateway API.
 
-Add setup instructions here for developers who want to run the project locally.
-
-### Prerequisites
-
-List any prerequisites (Node.js, Python, Docker, etc.) and their required versions.
-
-### Installation
+## Quick Start
 
 ```bash
-# Add installation steps
+docker compose up -d --build
+sleep 10
 ```
 
-## Usage
+| Service | URL |
+|---------|-----|
+| Merchant Dashboard | http://localhost:5173 |
+| Demo Shop | http://localhost:5174 |
+| Bank Dashboard | http://localhost:5175 |
+| Gateway API | http://localhost:3000 |
+| Bank API | http://localhost:3001 |
+| Shop API | http://localhost:4000 |
 
-Add usage instructions here, including any commands to run the project.
+## Services
 
-## Development
+| Service | Path | Port |
+|---------|------|------|
+| Local Bank API | `services/bank` | 3001 |
+| Payment Gateway API | `services/gateway` | 3000 |
+| Shop Backend API | `services/shop` | 4000 |
+| Merchant Dashboard | `web/dashboard` | 5173 |
+| Shop Frontend | `web/shop` | 5174 |
+| Bank Dashboard | `web/bank-dashboard` | 5175 |
+| Shared Types | `packages/shared` | - |
 
-Add development workflow notes here (running tests, linting, building).
+## Quick Demo
+
+```bash
+# 1. Create merchant (saves secret key)
+M=$(curl -s -X POST http://localhost:3000/api/v1/merchants \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","email":"test@demo.com"}')
+
+# 2. Create payment (use the returned secret key)
+curl -X POST http://localhost:3000/api/v1/payments \
+  -H "Authorization: Bearer $SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":1000,"currency":"USD"}'
+
+# 3. Approve in bank dashboard (http://localhost:5175)
+#    Transaction -> Approve
+# 4. Payment status updates to "succeeded"
+```
+
+See [docs/README.md](docs/README.md) for full documentation.
+
+## Running Tests
+
+```bash
+npm test
+```
 
 ## License
 
-Specify a license if applicable.
+MIT

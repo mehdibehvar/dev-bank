@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { apiKeyAuth, requireSecretKey, idempotencyMiddleware, validatePaymentCreate, validateWebhookCreate, maskSensitiveData } from '../middleware/auth';
+import { apiKeyAuth, requireSecretKey, idempotencyMiddleware, validatePaymentCreate, validateWebhookCreate } from '../middleware/auth';
 import * as queries from '../db/queries';
 import { generateClientSecret, createBankTransaction, findOrCreateBankAccount, handleBankWebhook } from '../services/bank-client';
 import { PaymentCreateRequest } from '@dev-bank/shared';
