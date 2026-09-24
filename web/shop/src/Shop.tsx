@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const TEST_MODE_INDICATOR = 'TEST MODE';
 
@@ -39,7 +39,6 @@ export default function Shop() {
   const [order, setOrder] = useState<Order | null>(null);
   const [payment, setPayment] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [gatewayConfigured, setGatewayConfigured] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -127,7 +126,6 @@ export default function Shop() {
           body: JSON.stringify({ paymentId: data.id, status: 'pending' })
         });
         setOrder({ ...order, payment_id: data.id, status: 'pending' } as any);
-        setGatewayConfigured(true);
       } else {
         alert('Error creating payment: ' + data.message);
       }
@@ -315,7 +313,7 @@ function CheckoutSection({ cart, total, customer, order, payment, loading, onCre
       <div className="space-y-3">
         {!order ? (
           <button
-            onClick={createOrder}
+            onClick={onCreateOrder}
             disabled={loading || !canCheckout}
             className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 disabled:opacity-50"
           >

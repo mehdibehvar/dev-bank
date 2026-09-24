@@ -1,9 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TEST_MODE_INDICATOR = 'TEST MODE';
 
 const GATEWAY_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+interface Merchant {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface ApiKey {
+  id: string;
+  merchantId: string;
+  type: 'publishable' | 'secret' | 'webhook';
+  keyPrefix: string;
+  keyHash: string;
+  createdAt: Date;
+  revokedAt: Date | null;
+}
+
+interface WebhookEndpoint {
+  id: string;
+  merchantId: string;
+  url: string;
+  secretHash: string;
+  secretPrefix: string;
+  createdAt: Date;
+}
+
+interface Payment {
+  id: string;
+  merchantId: string;
+  amount: number;
+  currency: string;
+  status: string;
+  idempotencyKey: string | null;
+  metadata: Record<string, unknown>;
+  clientSecret?: string;
+  bankTransactionId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface MerchantWithKeys extends Merchant {
   secret_key: string;
@@ -177,9 +218,6 @@ export default function MerchantDashboard() {
             apiKeys={apiKeys}
             payments={payments}
             webhooks={webhooks}
-            fetchKeys={() => fetchKeys(selectedMerchant)}
-            fetchPayments={() => fetchPayments(selectedMerchant)}
-            fetchWebhooks={() => fetchWebhooks(selectedMerchant)}
             onAddWebhook={addWebhook}
             onBack={() => setSelectedMerchant(null)}
             onCreateKey={async (type: 'publishable' | 'secret') => {
@@ -261,15 +299,12 @@ interface MerchantDetailProps {
   apiKeys: ApiKey[];
   payments: Payment[];
   webhooks: WebhookEndpoint[];
-  fetchKeys: () => void;
-  fetchPayments: () => void;
-  fetchWebhooks: () => void;
   onAddWebhook: (url: string) => void;
   onBack: () => void;
   onCreateKey: (type: 'publishable' | 'secret') => void;
 }
 
-function MerchantDetail({ merchant, apiKeys, payments, webhooks, fetchKeys, fetchPayments, fetchWebhooks, onAddWebhook, onBack, onCreateKey }: MerchantDetailProps) {
+function MerchantDetail({ merchant, apiKeys, payments, webhooks, onAddWebhook, onBack, onCreateKey }: MerchantDetailProps) {
   return (
     <div className="space-y-6">
       <button className="text-blue-600 hover:text-blue-900" onClick={onBack}>&larr; Back to Merchants</button>

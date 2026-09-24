@@ -23,6 +23,7 @@ All money is simulated. The system runs entirely locally.
 - [Security](#security)
 - [Development](#development)
 - [Environment Variables](#environment-variables)
+- [Docker Setup](DOCKER.md)
 
 ## Architecture
 

@@ -61,7 +61,7 @@ curl -X POST http://localhost:3000/api/v1/payments \
 # 4. Payment status updates to "succeeded"
 ```
 
-See [docs/README.md](docs/README.md) for full documentation.
+See [docs/README.md](docs/README.md) for full documentation, including [Docker setup](docs/DOCKER.md).
 
 ## Running Tests
 
